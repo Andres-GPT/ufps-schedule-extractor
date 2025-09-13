@@ -1,0 +1,30 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
+
+# --- Entornos virtuales ---
+venv/
+.env/
+.venv/
+env/
+ENV/
+
+# --- Archivos de logs ---
+*.log
+
+# --- Archivos temporales ---
+*.tmp
+*.swp
+*.bak
+.DS_Store
+Thumbs.db
+
+# --- Configuración de IDE ---
+.vscode/
+.idea/
