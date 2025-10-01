@@ -28,13 +28,6 @@ def extraer_tabla_pdf(archivo_stream):
 
 
 def parsear_materias(filas):
-    """
-    Procesa las filas de las tablas y devuelve un JSON
-    con los salones SA4**, organizados por días de la semana.
-
-    :param filas: lista de filas extraídas del PDF
-    :return: diccionario con salones y horarios
-    """
     salones = {}
     dias_semana = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"]
 
@@ -46,6 +39,7 @@ def parsear_materias(filas):
         if not codigo.startswith("115"):  # solo materias con código 115
             continue
 
+        codigo_prof = fila[3].strip() if fila[3] else ""  # <-- NUEVO
         nombre = fila[5].strip()
 
         for i, dia in enumerate(dias_semana, start=6):
@@ -58,7 +52,6 @@ def parsear_materias(filas):
                 hora = partes[0] if partes else ""
                 salon = partes[1] if len(partes) > 1 else ""
 
-                # Solo interesan los salones que empiezan por SA4
                 if not salon.startswith("SA4"):
                     continue
 
@@ -69,17 +62,20 @@ def parsear_materias(filas):
                     salones[salon][dia] = []
 
                 salones[salon][dia].append(
-                    {"codigo": codigo, "nombre": nombre, "hora": hora}
+                    {
+                        "codigo": codigo,
+                        "codigo_p": codigo_prof,  # <-- SE AGREGA AQUÍ
+                        "nombre": nombre,
+                        "hora": hora,
+                    }
                 )
 
-    # 🔹 ordenar salones numéricamente (SA401 < SA402 …)
+    # Ordenar salones y días
     salones_ordenados = dict(
         sorted(
             salones.items(), key=lambda x: int(re.search(r"SA4(\d+)", x[0]).group(1))
         )
     )
-
-    # 🔹 ordenar días dentro de cada salón
     for salon, dias in salones_ordenados.items():
         salones_ordenados[salon] = {
             dia: dias[dia] for dia in dias_semana if dia in dias
